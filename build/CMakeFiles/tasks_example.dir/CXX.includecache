@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/lib/simulator.h
+thread
+-
+mutex
+-
+condition_variable
+-
+
+/home/idhuser/Dropbox/Enseignement/M2 ROB 2015/Archi/project/src/example/two_tasks/task_example.cpp
+iostream
+-
+thread
+-
+simulator.h
+/home/idhuser/Dropbox/Enseignement/M2 ROB 2015/Archi/project/src/example/two_tasks/simulator.h
+

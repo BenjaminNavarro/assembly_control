@@ -1,0 +1,62 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/idhuser/Dropbox/Enseignement/M2 ROB 2015/Archi/project/src/lib/simple_simulator.cpp
+simple_simulator.h
+/home/idhuser/Dropbox/Enseignement/M2 ROB 2015/Archi/project/src/lib/simple_simulator.h
+iostream
+-
+thread
+-
+chrono
+-
+cstring
+-
+time.h
+-
+sys/time.h
+-
+extApi.h
+/home/idhuser/Dropbox/Enseignement/M2 ROB 2015/Archi/project/src/lib/extApi.h
+
+/home/idhuser/Dropbox/Enseignement/M2 ROB 2015/Archi/project/src/lib/simple_simulator.h
+thread
+-
+mutex
+-
+condition_variable
+-
+simulator.h
+/home/idhuser/Dropbox/Enseignement/M2 ROB 2015/Archi/project/src/lib/simulator.h
+
+/home/idhuser/Dropbox/Enseignement/M2 ROB 2015/Archi/project/src/lib/simulator.cpp
+simulator.h
+/home/idhuser/Dropbox/Enseignement/M2 ROB 2015/Archi/project/src/lib/simulator.h
+iostream
+-
+chrono
+-
+thread
+-
+cstring
+-
+time.h
+-
+sys/time.h
+-
+extApi.h
+/home/idhuser/Dropbox/Enseignement/M2 ROB 2015/Archi/project/src/lib/extApi.h
+
+/home/idhuser/Dropbox/Enseignement/M2 ROB 2015/Archi/project/src/lib/simulator.h
+thread
+-
+mutex
+-
+condition_variable
+-
+
