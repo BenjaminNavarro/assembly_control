@@ -1,4 +1,6 @@
-# Project organization
+# Assembly control
+
+## Project organization
 - CMakeLists.txt : CMake configuration file
 - src : All source files
   - application (where to put your code)
@@ -11,7 +13,7 @@
   - full (full Petri nets, with in/out places)
   - analyze (analyzable Petri nets, without in/out places)
  
-# Building the project
+## Building the project
 CMake v2.6 and GCC v4.7 (or newer) required
 
 V-REP needs to be installed within a folder called 'V-REP' under:
@@ -25,7 +27,7 @@ cmake ..
 make
 ```
 
-# Running the code
+## Running the code
 Start V-REP (open ~/vrep.sh in a terminal for Linux users) then do:
 ```
 cd bin
