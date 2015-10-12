@@ -8,7 +8,10 @@
   - lib (V-REP interface library)
 - build : Build directory
 - bin : executables output directory
-- doc : Documentation (Doxygen)
+- doc : Documentation
+  - Makefile (to update the documentation)
+  - html (Doxygen documentation, index.html)
+  - Sujet\_Cellule\_Robotisee.doc (project subject)
 - nets : Petri nets
   - full (full Petri nets, with in/out places)
   - analyze (analyzable Petri nets, without in/out places)
