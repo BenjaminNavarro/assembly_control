@@ -1,1 +1,0 @@
-/usr/bin/c++    -std=c++11 -I/home/idhuser/V-REP/programming/remoteApi -I/home/idhuser/V-REP/programming/include -DNON_MATLAB_PARSING -DMAX_EXT_API_CONNECTIONS=255 -D__linux -fPIC -O3 -DNDEBUG   CMakeFiles/simple_assembly_control.dir/src/application/simple_simulator/main.cpp.o  -o ../bin/simple_assembly_control -rdynamic libsimulator.a -lpthread 

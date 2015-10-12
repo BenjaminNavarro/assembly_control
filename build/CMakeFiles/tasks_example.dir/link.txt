@@ -1,1 +1,0 @@
-/usr/bin/c++    -std=c++11 -I/home/idhuser/V-REP/programming/remoteApi -I/home/idhuser/V-REP/programming/include -DNON_MATLAB_PARSING -DMAX_EXT_API_CONNECTIONS=255 -D__linux -fPIC -O3 -DNDEBUG   CMakeFiles/tasks_example.dir/src/example/two_tasks/task_example.cpp.o  -o ../bin/tasks_example -rdynamic libsimulator.a -lpthread 
