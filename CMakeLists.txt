@@ -6,10 +6,10 @@ set(EXECUTABLE_OUTPUT_PATH ../bin)
 
 if(APPLE)
 	set(VREP_PATH "/Applications/V-REP/programming")
-	set(VREP_CFLAGS "-I${VREP_PATH}/remoteApi -I${VREP_PATH}/include -DNON_MATLAB_PARSING -DMAX_EXT_API_CONNECTIONS=255 -D__APPLE__")
+	set(VREP_CFLAGS "-DNON_MATLAB_PARSING -DMAX_EXT_API_CONNECTIONS=255 -D__APPLE__")
 elseif(UNIX)
 	set(VREP_PATH "$ENV{HOME}/V-REP/programming")
-	set(VREP_CFLAGS "-I${VREP_PATH}/remoteApi -I${VREP_PATH}/include -DNON_MATLAB_PARSING -DMAX_EXT_API_CONNECTIONS=255 -D__linux")
+	set(VREP_CFLAGS "-DNON_MATLAB_PARSING -DMAX_EXT_API_CONNECTIONS=255 -D__linux")
 endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${VREP_CFLAGS} -fPIC")
@@ -29,6 +29,7 @@ add_library(simulator ${lib_source_files})
 target_link_libraries(simulator ${CMAKE_THREAD_LIBS_INIT})
 
 include_directories(src/lib)
+include_directories(src/lib/vrep)
 
 # Applications
 file(

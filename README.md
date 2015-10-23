@@ -19,10 +19,6 @@
 ## Building the project
 CMake v2.6 and GCC v4.7 (or newer) required
 
-V-REP needs to be installed within a folder called 'V-REP' under:
-- Your home folder (Linux)
-- Your 'Applications' folder (Mac) 
-
 In a terminal, do the following:
 ```
 cd build
@@ -31,7 +27,7 @@ make
 ```
 
 ## Running the code
-Start V-REP (open ~/vrep.sh in a terminal for Linux users) then do:
+Start V-REP (open vrep.sh inside the V-REP directory in a terminal for Linux users) then do:
 ```
 cd bin
 ./your_application
