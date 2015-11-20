@@ -11,6 +11,7 @@
 
 #include <thread>
 #include <mutex>
+#include <chrono>
 #include <condition_variable>
 
 /**
@@ -29,6 +30,19 @@ public:
 	void wait() {
 		std::unique_lock<std::mutex> lock(m_);
 		cv_.wait(lock);
+	}
+
+	/**
+	 * @brief Wait for the signal to come (blocking call) for a certain amount of time
+	 * @param ms Number of milliseconds to wait before returning
+	 * @return true is the signal has arrived during the timeout period, false otherwise
+	 */
+	bool wait_for(int ms) {
+		std::unique_lock<std::mutex> lock(m_);
+		if(cv_.wait_for(lock, std::chrono::milliseconds(ms)) == std::cv_status::timeout)
+			return false;
+		else 
+			return true;
 	}
 
 	/**
@@ -117,32 +131,46 @@ public:
 	/***	Signals		***/
 	/**
 	 * @brief Wait for the CO signal (optical barrier)
+	 * @param msec number of milliseconds to wait before returning. If negative (default value), the wait is infinite
+	 * @return true is the signal has arrived during the timeout period, false otherwise
 	 */
-	void wait_co();
+	bool wait_co(int msec = -1);
 	/**
 	 * @brief Wait for the fprise signal (object took by the robot)
+	 * @param msec number of milliseconds to wait before returning. If negative (default value), the wait is infinite
+	 * @return true is the signal has arrived during the timeout period, false otherwise
 	 */
-	void wait_fprise();
+	bool wait_fprise(int msec = -1);
 	/**
 	 * @brief Wait for the fpose signal (object put down by the robot)
+	 * @param msec number of milliseconds to wait before returning. If negative (default value), the wait is infinite
+	 * @return true is the signal has arrived during the timeout period, false otherwise
 	 */
-	void wait_fpose();
+	bool wait_fpose(int msec = -1);
 	/**
 	 * @brief Wait for the pos_t1 signal (robot over supply conveyor)
+	 * @param msec number of milliseconds to wait before returning. If negative (default value), the wait is infinite
+	 * @return true is the signal has arrived during the timeout period, false otherwise
 	 */
-	void wait_pos_t1();
+	bool wait_pos_t1(int msec = -1);
 	/**
 	 * @brief Wait for the pos_t2 signal (robot over evacuation conveyor)
+	 * @param msec number of milliseconds to wait before returning. If negative (default value), the wait is infinite
+	 * @return true is the signal has arrived during the timeout period, false otherwise
 	 */
-	void wait_pos_t2();
+	bool wait_pos_t2(int msec = -1);
 	/**
 	 * @brief Wait for the pos_assem signal (robot over assembly station)
+	 * @param msec number of milliseconds to wait before returning. If negative (default value), the wait is infinite
+	 * @return true is the signal has arrived during the timeout period, false otherwise
 	 */
-	void wait_pos_assem();
+	bool wait_pos_assem(int msec = -1);
 	/**
 	 * @brief Wait for the arret_t2 signal (evacuation conveyor stopped)
+	 * @param msec number of milliseconds to wait before returning. If negative (default value), the wait is infinite
+	 * @return true is the signal has arrived during the timeout period, false otherwise
 	 */
-	void wait_arret_t2();
+	bool wait_arret_t2(int msec = -1);
 
 	/**
 	 * @brief Read the fin_reccam signal (end of object recognition)
