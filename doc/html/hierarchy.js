@@ -8,5 +8,5 @@ var hierarchy =
     [ "Simulator", "class_simulator.html", [
       [ "SimpleSimulator", "class_simple_simulator.html", null ]
     ] ],
-    [ "SLuaCallBack", "struct_s_lua_call_back.html", null ]
+    [ "StatusSignal", "class_status_signal.html", null ]
 ];

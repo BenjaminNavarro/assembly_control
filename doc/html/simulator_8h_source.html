@@ -143,154 +143,181 @@ $(document).ready(function(){initNavTree('simulator_8h_source.html','');});
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="class_message_box.html">   68</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_message_box.html">MessageBox</a> : <span class="keyword">public</span> <a class="code" href="class_signal.html">Signal</a> </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;{</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <a class="code" href="class_message_box.html">MessageBox</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    ~<a class="code" href="class_message_box.html">MessageBox</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="class_message_box.html#aaff77d487c650b26f9052c7e2cf63808">   79</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_message_box.html#aaff77d487c650b26f9052c7e2cf63808">send</a>(T data) {</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        m_.lock();</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        data_ = data;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        m_.unlock();</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <a class="code" href="class_signal.html#a4ddddf27d0d4fea7bbfdbb2e498cd8f9">notify</a>();</div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="class_status_signal.html">   64</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_status_signal.html">StatusSignal</a> {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    std::mutex m_;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <a class="code" href="class_status_signal.html">StatusSignal</a>() {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        m_.lock();</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    }</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="class_status_signal.html#a6211c3b42196aa5f2de92cfa9e79f618">   75</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_status_signal.html#a6211c3b42196aa5f2de92cfa9e79f618">set</a>() {</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        m_.unlock();</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    }</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="class_status_signal.html#a320cd4e6ce25de47ab0b6312926f08c3">   82</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_status_signal.html#a320cd4e6ce25de47ab0b6312926f08c3">clear</a>() {</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        m_.try_lock();</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    }</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="class_message_box.html#a4745ad9822e838c9410f369143219018">   91</a></span>&#160;    T <a class="code" href="class_message_box.html#a4745ad9822e838c9410f369143219018">receive</a>() {</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        std::unique_lock&lt;std::mutex&gt; lock(m_);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        cv_.wait(lock);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        <span class="keywordflow">return</span> data_;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    }</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        T data_;</div>
+<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="class_status_signal.html#afbd22c43cf42681111ab73a60a509400">   89</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_status_signal.html#afbd22c43cf42681111ab73a60a509400">has_arrived</a>() {</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        <span class="keywordflow">if</span>(m_.try_lock()) {</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;            m_.unlock();</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        }</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        <span class="keywordflow">else</span> </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    }</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;};</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;};</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno"><a class="line" href="class_simulator.html">  105</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_simulator.html">Simulator</a></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;{</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <a class="code" href="class_simulator.html">Simulator</a>();</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    ~<a class="code" href="class_simulator.html">Simulator</a>();</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <a class="code" href="class_simulator.html">Simulator</a>(<span class="keyword">const</span> <a class="code" href="class_simulator.html">Simulator</a>&amp; sim) {</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    }</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <a class="code" href="class_simulator.html">Simulator</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="class_simulator.html">Simulator</a>&amp; sim) {</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    }</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#af95a7dbe9f67c8a67b8b21abf9dde26b">start</a>(<span class="keywordtype">int</span> cycle_ms = 25);</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    </div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#aa33259e44ccd34588e5eb78e03fee2a0">stop</a>();</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="comment">/***    Signals     ***/</span></div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#aa58e300bc3f53b34234766461ab1e20b">wait_co</a>(<span class="keywordtype">int</span> msec = -1);</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#ab60f84c0a4427b19250e04883c497634">wait_fprise</a>(<span class="keywordtype">int</span> msec = -1);</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a1b3e094e1cc4237d2b7d85c31a054fec">wait_fpose</a>(<span class="keywordtype">int</span> msec = -1);</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#aef7e0ac61839e0764e83ac31da2680a8">wait_pos_t1</a>(<span class="keywordtype">int</span> msec = -1);</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#aabe142aa112ad1b512ff59eff914eea8">wait_pos_t2</a>(<span class="keywordtype">int</span> msec = -1);</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a205f7060958e3e606e89b522930a3247">wait_pos_assem</a>(<span class="keywordtype">int</span> msec = -1);</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a2a9ad23a2c7d4b6da4835176e319eaea">wait_arret_t2</a>(<span class="keywordtype">int</span> msec = -1);</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#aa0b27cf73ddbebab1def9e2b06ff13b3">read_fin_reccam</a>();</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a850a2ebeb06655d8854c2accc936d03f">read_p1</a>();</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a1a618560d6902043aaaf128e0b74f3b8">read_p2</a>();</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a42478d650fc4e09b1c288a02a65c46f8">read_p3</a>();</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a1ce3b553784d4f8183b689e217404002">read_fin_OP1</a>();</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a1d156d875bce92c493dd24ac40da7d9e">read_fin_OP2</a>();</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#adc667fd5e688c7f9200727cc6c74afc4">read_fin_OP3</a>();</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a65d136f8d1ddeaf623b1c251dac8416d">read_assemblage_conforme</a>();</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a21fba68679672c225586e9ab40ad1972">read_assemblage_evacue</a>();</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="comment">/***    Commands    ***/</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a96ab4c409a7c7919c360d27e4ecda095">set_AV_T1</a>(<span class="keywordtype">bool</span> state);</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a5d7c478903fcc8ffdf06410f7beee507">set_AV_T2</a>(<span class="keywordtype">bool</span> state);</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a6556eb78c64f86b5da8c651a6a1586ab">set_Reccam</a>(<span class="keywordtype">bool</span> state);</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a40f8bc8e20bd4fb421049cddfc14d52c">set_D</a>(<span class="keywordtype">bool</span> state);</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#acc9cde12626a3f9ffccce091b33e354d">set_G</a>(<span class="keywordtype">bool</span> state);</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#ad76fdceb5a1a254a4abe35e2abbb7ef2">set_Prend</a>(<span class="keywordtype">bool</span> state);</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a9886fdcb11f89d2f523f55e610cf3dc5">set_Pose</a>(<span class="keywordtype">bool</span> state);</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a0468d6b438c3cc225a9213570a2b1261">set_OP1</a>(<span class="keywordtype">bool</span> state);</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a4a268df7efe009bdc42720300e1ac8e9">set_OP2</a>(<span class="keywordtype">bool</span> state);</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a443233f83c0bd7cbd444417911947882">set_OP3</a>(<span class="keywordtype">bool</span> state);</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a257149bacf3366941acd7cbf6eb39431">set_Verif</a>(<span class="keywordtype">bool</span> state);</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a8277623e062cc4992dc5c4c7a1cf6c3c">get_Handles</a>();</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#ab0de30ea39902b76280415ebffd87339">start_Streaming</a>();</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="class_simulator.html#a481acdfdfdf70a0457a2cc1a6ee149b7">get_Current_Time</a>();</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a019da74701f5a5d151d0ce3332454e9d">process</a>(<span class="keywordtype">int</span> cycle_ms);</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;</div>
-<div class="line"><a name="l00329"></a><span class="lineno"><a class="line" href="struct_simulator_1_1commands__t.html">  329</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="struct_simulator_1_1commands__t.html">commands_t</a></div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    {</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        <span class="keywordtype">bool</span> AV_T1;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;        <span class="keywordtype">bool</span> AV_T2;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;        <span class="keywordtype">bool</span> Reccam;</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;        <span class="keywordtype">bool</span> D;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;        <span class="keywordtype">bool</span> G;</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;        <span class="keywordtype">bool</span> Prend;</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;        <span class="keywordtype">bool</span> Pose;</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;        <span class="keywordtype">bool</span> OP1;</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;        <span class="keywordtype">bool</span> OP2;</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        <span class="keywordtype">bool</span> OP3;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;        <span class="keywordtype">bool</span> Verif;</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    };</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    <a class="code" href="struct_simulator_1_1commands__t.html">commands_t</a> commands_;</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;</div>
-<div class="line"><a name="l00349"></a><span class="lineno"><a class="line" href="struct_simulator_1_1signals__t.html">  349</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="struct_simulator_1_1signals__t.html">signals_t</a></div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    {</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;        <a class="code" href="class_signal.html">Signal</a> co;</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;        <a class="code" href="class_signal.html">Signal</a> fprise;</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;        <a class="code" href="class_signal.html">Signal</a> fpose;</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;        <a class="code" href="class_signal.html">Signal</a> pos_t1;</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;        <a class="code" href="class_signal.html">Signal</a> pos_t2;</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;        <a class="code" href="class_signal.html">Signal</a> pos_assem;</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;        <a class="code" href="class_signal.html">Signal</a> arret_t2;</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;        <span class="keywordtype">bool</span> fin_reccam;</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;        <span class="keywordtype">bool</span> p1;</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;        <span class="keywordtype">bool</span> p2;</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;        <span class="keywordtype">bool</span> p3;</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;        <span class="keywordtype">bool</span> scg;</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;        <span class="keywordtype">bool</span> scd;</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;        <span class="keywordtype">bool</span> fin_OP1;</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;        <span class="keywordtype">bool</span> fin_OP2;</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;        <span class="keywordtype">bool</span> fin_OP3;</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;        <span class="keywordtype">bool</span> assemblage_conforme;</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;        <span class="keywordtype">bool</span> assemblage_evacue;</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    };</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    <a class="code" href="struct_simulator_1_1signals__t.html">signals_t</a> signals_;</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    </div>
-<div class="line"><a name="l00376"></a><span class="lineno"><a class="line" href="class_simulator.html#aaac69a360e4906721ac663081385008c">  376</a></span>&#160;    <span class="keyword">enum</span> <a class="code" href="class_simulator.html#aaac69a360e4906721ac663081385008c">Position</a> {</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        PosAssembly = 1, </div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        PosAppro = 2, </div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        PosEvac = 3,</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00106"></a><span class="lineno"><a class="line" href="class_message_box.html">  106</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_message_box.html">MessageBox</a> : <span class="keyword">public</span> <a class="code" href="class_signal.html">Signal</a> </div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;{</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <a class="code" href="class_message_box.html">MessageBox</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    ~<a class="code" href="class_message_box.html">MessageBox</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno"><a class="line" href="class_message_box.html#aaff77d487c650b26f9052c7e2cf63808">  117</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_message_box.html#aaff77d487c650b26f9052c7e2cf63808">send</a>(T data) {</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        m_.lock();</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        data_ = data;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        m_.unlock();</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <a class="code" href="class_signal.html#a4ddddf27d0d4fea7bbfdbb2e498cd8f9">notify</a>();</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    }</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
+<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="class_message_box.html#a4745ad9822e838c9410f369143219018">  129</a></span>&#160;    T <a class="code" href="class_message_box.html#a4745ad9822e838c9410f369143219018">receive</a>() {</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        std::unique_lock&lt;std::mutex&gt; lock(m_);</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        cv_.wait(lock);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <span class="keywordflow">return</span> data_;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    }</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        T data_;</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;};</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
+<div class="line"><a name="l00143"></a><span class="lineno"><a class="line" href="class_simulator.html">  143</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_simulator.html">Simulator</a></div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;{</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    <a class="code" href="class_simulator.html">Simulator</a>();</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    ~<a class="code" href="class_simulator.html">Simulator</a>();</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    <a class="code" href="class_simulator.html">Simulator</a>(<span class="keyword">const</span> <a class="code" href="class_simulator.html">Simulator</a>&amp; sim) {</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    }</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    <a class="code" href="class_simulator.html">Simulator</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="class_simulator.html">Simulator</a>&amp; sim) {</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    }</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#af95a7dbe9f67c8a67b8b21abf9dde26b">start</a>(<span class="keywordtype">int</span> cycle_ms = 25);</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    </div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#aa33259e44ccd34588e5eb78e03fee2a0">stop</a>();</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    <span class="comment">/***    Signals     ***/</span></div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#aa58e300bc3f53b34234766461ab1e20b">wait_co</a>(<span class="keywordtype">int</span> msec = -1);</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#ab60f84c0a4427b19250e04883c497634">wait_fprise</a>(<span class="keywordtype">int</span> msec = -1);</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a1b3e094e1cc4237d2b7d85c31a054fec">wait_fpose</a>(<span class="keywordtype">int</span> msec = -1);</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#aef7e0ac61839e0764e83ac31da2680a8">wait_pos_t1</a>(<span class="keywordtype">int</span> msec = -1);</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#aabe142aa112ad1b512ff59eff914eea8">wait_pos_t2</a>(<span class="keywordtype">int</span> msec = -1);</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a205f7060958e3e606e89b522930a3247">wait_pos_assem</a>(<span class="keywordtype">int</span> msec = -1);</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a2a9ad23a2c7d4b6da4835176e319eaea">wait_arret_t2</a>(<span class="keywordtype">int</span> msec = -1);</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#aa0b27cf73ddbebab1def9e2b06ff13b3">read_fin_reccam</a>();</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a850a2ebeb06655d8854c2accc936d03f">read_p1</a>();</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a1a618560d6902043aaaf128e0b74f3b8">read_p2</a>();</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a42478d650fc4e09b1c288a02a65c46f8">read_p3</a>();</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a1ce3b553784d4f8183b689e217404002">read_fin_OP1</a>();</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a1d156d875bce92c493dd24ac40da7d9e">read_fin_OP2</a>();</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#adc667fd5e688c7f9200727cc6c74afc4">read_fin_OP3</a>();</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a65d136f8d1ddeaf623b1c251dac8416d">read_assemblage_conforme</a>();</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a21fba68679672c225586e9ab40ad1972">read_assemblage_evacue</a>();</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    <span class="comment">/***    Commands    ***/</span></div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a96ab4c409a7c7919c360d27e4ecda095">set_AV_T1</a>(<span class="keywordtype">bool</span> state);</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a5d7c478903fcc8ffdf06410f7beee507">set_AV_T2</a>(<span class="keywordtype">bool</span> state);</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a6556eb78c64f86b5da8c651a6a1586ab">set_Reccam</a>(<span class="keywordtype">bool</span> state);</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a40f8bc8e20bd4fb421049cddfc14d52c">set_D</a>(<span class="keywordtype">bool</span> state);</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#acc9cde12626a3f9ffccce091b33e354d">set_G</a>(<span class="keywordtype">bool</span> state);</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#ad76fdceb5a1a254a4abe35e2abbb7ef2">set_Prend</a>(<span class="keywordtype">bool</span> state);</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a9886fdcb11f89d2f523f55e610cf3dc5">set_Pose</a>(<span class="keywordtype">bool</span> state);</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a0468d6b438c3cc225a9213570a2b1261">set_OP1</a>(<span class="keywordtype">bool</span> state);</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a4a268df7efe009bdc42720300e1ac8e9">set_OP2</a>(<span class="keywordtype">bool</span> state);</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a443233f83c0bd7cbd444417911947882">set_OP3</a>(<span class="keywordtype">bool</span> state);</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a257149bacf3366941acd7cbf6eb39431">set_Verif</a>(<span class="keywordtype">bool</span> state);</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#a8277623e062cc4992dc5c4c7a1cf6c3c">get_Handles</a>();</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="class_simulator.html#ab0de30ea39902b76280415ebffd87339">start_Streaming</a>();</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="class_simulator.html#a481acdfdfdf70a0457a2cc1a6ee149b7">get_Current_Time</a>();</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_simulator.html#a019da74701f5a5d151d0ce3332454e9d">process</a>(<span class="keywordtype">int</span> cycle_ms);</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;</div>
+<div class="line"><a name="l00367"></a><span class="lineno"><a class="line" href="struct_simulator_1_1commands__t.html">  367</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="struct_simulator_1_1commands__t.html">commands_t</a></div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    {</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;        <span class="keywordtype">bool</span> AV_T1;</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;        <span class="keywordtype">bool</span> AV_T2;</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;        <span class="keywordtype">bool</span> Reccam;</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;        <span class="keywordtype">bool</span> D;</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;        <span class="keywordtype">bool</span> G;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;        <span class="keywordtype">bool</span> Prend;</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        <span class="keywordtype">bool</span> Pose;</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        <span class="keywordtype">bool</span> OP1;</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        <span class="keywordtype">bool</span> OP2;</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        <span class="keywordtype">bool</span> OP3;</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        <span class="keywordtype">bool</span> Verif;</div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    };</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    <a class="code" href="class_simulator.html#aaac69a360e4906721ac663081385008c">Position</a> prev_position_;</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    </div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;    <span class="keywordtype">int</span> prev_gripper_state_;</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;    <span class="keywordtype">int</span> prev_optical_barrier_state_;</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;    <span class="keywordtype">int</span> prev_evac_conveyor_state_;</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;    <span class="keywordtype">double</span> last_created_object_time_;</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    <span class="keywordtype">int</span> last_created_object_type_;</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;    std::thread thread_;</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;    <span class="keywordtype">bool</span> run_;</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;    <span class="keywordtype">int</span> client_id_;</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;    <span class="keywordtype">int</span> appro_prox_sensor_handle_;</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    </div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;};</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;<span class="keyword">extern</span> <a class="code" href="class_simulator.html">Simulator</a> sim;</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="class_message_box_html"><div class="ttname"><a href="class_message_box.html">MessageBox</a></div><div class="ttdoc">Implementation of a message box synchronization system. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00068">simulator.h:68</a></div></div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    <a class="code" href="struct_simulator_1_1commands__t.html">commands_t</a> commands_;</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;</div>
+<div class="line"><a name="l00387"></a><span class="lineno"><a class="line" href="struct_simulator_1_1signals__t.html">  387</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="struct_simulator_1_1signals__t.html">signals_t</a></div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    {</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;        <a class="code" href="class_signal.html">Signal</a> co;</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;        <a class="code" href="class_signal.html">Signal</a> fprise;</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;        <a class="code" href="class_signal.html">Signal</a> fpose;</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;        <a class="code" href="class_signal.html">Signal</a> pos_t1;</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        <a class="code" href="class_signal.html">Signal</a> pos_t2;</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;        <a class="code" href="class_signal.html">Signal</a> pos_assem;</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;        <a class="code" href="class_signal.html">Signal</a> arret_t2;</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        <span class="keywordtype">bool</span> fin_reccam;</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;        <span class="keywordtype">bool</span> p1;</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        <span class="keywordtype">bool</span> p2;</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;        <span class="keywordtype">bool</span> p3;</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;        <span class="keywordtype">bool</span> scg;</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;        <span class="keywordtype">bool</span> scd;</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;        <span class="keywordtype">bool</span> fin_OP1;</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;        <span class="keywordtype">bool</span> fin_OP2;</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;        <span class="keywordtype">bool</span> fin_OP3;</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;        <span class="keywordtype">bool</span> assemblage_conforme;</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;        <span class="keywordtype">bool</span> assemblage_evacue;</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;    };</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;    <a class="code" href="struct_simulator_1_1signals__t.html">signals_t</a> signals_;</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    </div>
+<div class="line"><a name="l00414"></a><span class="lineno"><a class="line" href="class_simulator.html#aaac69a360e4906721ac663081385008c">  414</a></span>&#160;    <span class="keyword">enum</span> <a class="code" href="class_simulator.html#aaac69a360e4906721ac663081385008c">Position</a> {</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;        PosAssembly = 1, </div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;        PosAppro = 2, </div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        PosEvac = 3,</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    };</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    <a class="code" href="class_simulator.html#aaac69a360e4906721ac663081385008c">Position</a> prev_position_;</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;    </div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    <span class="keywordtype">int</span> prev_gripper_state_;</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    <span class="keywordtype">int</span> prev_optical_barrier_state_;</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    <span class="keywordtype">int</span> prev_evac_conveyor_state_;</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    <span class="keywordtype">double</span> last_created_object_time_;</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    <span class="keywordtype">int</span> last_created_object_type_;</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;    std::thread thread_;</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    <span class="keywordtype">bool</span> run_;</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;    <span class="keywordtype">int</span> client_id_;</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    <span class="keywordtype">int</span> appro_prox_sensor_handle_;</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;    </div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;};</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;<span class="keyword">extern</span> <a class="code" href="class_simulator.html">Simulator</a> sim;</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="class_message_box_html"><div class="ttname"><a href="class_message_box.html">MessageBox</a></div><div class="ttdoc">Implementation of a message box synchronization system. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00106">simulator.h:106</a></div></div>
+<div class="ttc" id="class_status_signal_html_a320cd4e6ce25de47ab0b6312926f08c3"><div class="ttname"><a href="class_status_signal.html#a320cd4e6ce25de47ab0b6312926f08c3">StatusSignal::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Clear the signal. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00082">simulator.h:82</a></div></div>
 <div class="ttc" id="class_simulator_html_a21fba68679672c225586e9ab40ad1972"><div class="ttname"><a href="class_simulator.html#a21fba68679672c225586e9ab40ad1972">Simulator::read_assemblage_evacue</a></div><div class="ttdeci">bool read_assemblage_evacue()</div><div class="ttdoc">Read the assemblage_evacue signal (evacuated assembly) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00420">simulator.cpp:420</a></div></div>
 <div class="ttc" id="class_simulator_html_a4a268df7efe009bdc42720300e1ac8e9"><div class="ttname"><a href="class_simulator.html#a4a268df7efe009bdc42720300e1ac8e9">Simulator::set_OP2</a></div><div class="ttdeci">void set_OP2(bool state)</div><div class="ttdoc">Set the OP2 command (assembly operation 2) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00458">simulator.cpp:458</a></div></div>
 <div class="ttc" id="class_simulator_html_a40f8bc8e20bd4fb421049cddfc14d52c"><div class="ttname"><a href="class_simulator.html#a40f8bc8e20bd4fb421049cddfc14d52c">Simulator::set_D</a></div><div class="ttdeci">void set_D(bool state)</div><div class="ttdoc">Set the D command (robot going to the right) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00438">simulator.cpp:438</a></div></div>
@@ -299,16 +326,17 @@ $(document).ready(function(){initNavTree('simulator_8h_source.html','');});
 <div class="ttc" id="class_simulator_html_a65d136f8d1ddeaf623b1c251dac8416d"><div class="ttname"><a href="class_simulator.html#a65d136f8d1ddeaf623b1c251dac8416d">Simulator::read_assemblage_conforme</a></div><div class="ttdeci">bool read_assemblage_conforme()</div><div class="ttdoc">Read the assemblage_conforme signal (good assembly) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00416">simulator.cpp:416</a></div></div>
 <div class="ttc" id="class_simulator_html_a42478d650fc4e09b1c288a02a65c46f8"><div class="ttname"><a href="class_simulator.html#a42478d650fc4e09b1c288a02a65c46f8">Simulator::read_p3</a></div><div class="ttdeci">bool read_p3()</div><div class="ttdoc">Read the p3 signal (type 3 object) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00400">simulator.cpp:400</a></div></div>
 <div class="ttc" id="class_simulator_html_a96ab4c409a7c7919c360d27e4ecda095"><div class="ttname"><a href="class_simulator.html#a96ab4c409a7c7919c360d27e4ecda095">Simulator::set_AV_T1</a></div><div class="ttdeci">void set_AV_T1(bool state)</div><div class="ttdoc">Set the AV_T1 command (supply conveyor) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00426">simulator.cpp:426</a></div></div>
-<div class="ttc" id="struct_simulator_1_1commands__t_html"><div class="ttname"><a href="struct_simulator_1_1commands__t.html">Simulator::commands_t</a></div><div class="ttdoc">Commands sent to V-REP. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00329">simulator.h:329</a></div></div>
-<div class="ttc" id="class_simulator_html_aaac69a360e4906721ac663081385008c"><div class="ttname"><a href="class_simulator.html#aaac69a360e4906721ac663081385008c">Simulator::Position</a></div><div class="ttdeci">Position</div><div class="ttdoc">Current robot position. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00376">simulator.h:376</a></div></div>
-<div class="ttc" id="class_message_box_html_aaff77d487c650b26f9052c7e2cf63808"><div class="ttname"><a href="class_message_box.html#aaff77d487c650b26f9052c7e2cf63808">MessageBox::send</a></div><div class="ttdeci">void send(T data)</div><div class="ttdoc">Send a new data. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00079">simulator.h:79</a></div></div>
+<div class="ttc" id="struct_simulator_1_1commands__t_html"><div class="ttname"><a href="struct_simulator_1_1commands__t.html">Simulator::commands_t</a></div><div class="ttdoc">Commands sent to V-REP. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00367">simulator.h:367</a></div></div>
+<div class="ttc" id="class_simulator_html_aaac69a360e4906721ac663081385008c"><div class="ttname"><a href="class_simulator.html#aaac69a360e4906721ac663081385008c">Simulator::Position</a></div><div class="ttdeci">Position</div><div class="ttdoc">Current robot position. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00414">simulator.h:414</a></div></div>
+<div class="ttc" id="class_message_box_html_aaff77d487c650b26f9052c7e2cf63808"><div class="ttname"><a href="class_message_box.html#aaff77d487c650b26f9052c7e2cf63808">MessageBox::send</a></div><div class="ttdeci">void send(T data)</div><div class="ttdoc">Send a new data. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00117">simulator.h:117</a></div></div>
 <div class="ttc" id="class_signal_html"><div class="ttname"><a href="class_signal.html">Signal</a></div><div class="ttdoc">Implementation of a synchronization signal. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00020">simulator.h:20</a></div></div>
 <div class="ttc" id="class_simulator_html_ab60f84c0a4427b19250e04883c497634"><div class="ttname"><a href="class_simulator.html#ab60f84c0a4427b19250e04883c497634">Simulator::wait_fprise</a></div><div class="ttdeci">bool wait_fprise(int msec=-1)</div><div class="ttdoc">Wait for the fprise signal (object took by the robot) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00334">simulator.cpp:334</a></div></div>
 <div class="ttc" id="class_simulator_html_aa58e300bc3f53b34234766461ab1e20b"><div class="ttname"><a href="class_simulator.html#aa58e300bc3f53b34234766461ab1e20b">Simulator::wait_co</a></div><div class="ttdeci">bool wait_co(int msec=-1)</div><div class="ttdoc">Wait for the CO signal (optical barrier) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00325">simulator.cpp:325</a></div></div>
 <div class="ttc" id="class_simulator_html_acc9cde12626a3f9ffccce091b33e354d"><div class="ttname"><a href="class_simulator.html#acc9cde12626a3f9ffccce091b33e354d">Simulator::set_G</a></div><div class="ttdeci">void set_G(bool state)</div><div class="ttdoc">Set the G command (robot going to the left) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00442">simulator.cpp:442</a></div></div>
-<div class="ttc" id="class_simulator_html"><div class="ttname"><a href="class_simulator.html">Simulator</a></div><div class="ttdoc">Interface with the V-REP simulator. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00105">simulator.h:105</a></div></div>
+<div class="ttc" id="class_simulator_html"><div class="ttname"><a href="class_simulator.html">Simulator</a></div><div class="ttdoc">Interface with the V-REP simulator. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00143">simulator.h:143</a></div></div>
+<div class="ttc" id="class_status_signal_html_afbd22c43cf42681111ab73a60a509400"><div class="ttname"><a href="class_status_signal.html#afbd22c43cf42681111ab73a60a509400">StatusSignal::has_arrived</a></div><div class="ttdeci">bool has_arrived()</div><div class="ttdoc">Check if the signal has already been set. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00089">simulator.h:89</a></div></div>
 <div class="ttc" id="class_simulator_html_ad76fdceb5a1a254a4abe35e2abbb7ef2"><div class="ttname"><a href="class_simulator.html#ad76fdceb5a1a254a4abe35e2abbb7ef2">Simulator::set_Prend</a></div><div class="ttdeci">virtual void set_Prend(bool state)</div><div class="ttdoc">Set the Prend command (take an object) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00446">simulator.cpp:446</a></div></div>
-<div class="ttc" id="struct_simulator_1_1signals__t_html"><div class="ttname"><a href="struct_simulator_1_1signals__t.html">Simulator::signals_t</a></div><div class="ttdoc">Signals read from V-REP. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00349">simulator.h:349</a></div></div>
+<div class="ttc" id="struct_simulator_1_1signals__t_html"><div class="ttname"><a href="struct_simulator_1_1signals__t.html">Simulator::signals_t</a></div><div class="ttdoc">Signals read from V-REP. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00387">simulator.h:387</a></div></div>
 <div class="ttc" id="class_signal_html_a4ddddf27d0d4fea7bbfdbb2e498cd8f9"><div class="ttname"><a href="class_signal.html#a4ddddf27d0d4fea7bbfdbb2e498cd8f9">Signal::notify</a></div><div class="ttdeci">void notify()</div><div class="ttdoc">Notify all the waiters that the signal has arrived. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00051">simulator.h:51</a></div></div>
 <div class="ttc" id="class_signal_html_adbf9cdcf24b9633d46bf77a5cef544cd"><div class="ttname"><a href="class_signal.html#adbf9cdcf24b9633d46bf77a5cef544cd">Signal::wait</a></div><div class="ttdeci">void wait()</div><div class="ttdoc">Wait for the signal to come (blocking call) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00030">simulator.h:30</a></div></div>
 <div class="ttc" id="class_simulator_html_a019da74701f5a5d151d0ce3332454e9d"><div class="ttname"><a href="class_simulator.html#a019da74701f5a5d151d0ce3332454e9d">Simulator::process</a></div><div class="ttdeci">void process(int cycle_ms)</div><div class="ttdoc">Communication thread. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00127">simulator.cpp:127</a></div></div>
@@ -326,9 +354,11 @@ $(document).ready(function(){initNavTree('simulator_8h_source.html','');});
 <div class="ttc" id="class_simulator_html_af95a7dbe9f67c8a67b8b21abf9dde26b"><div class="ttname"><a href="class_simulator.html#af95a7dbe9f67c8a67b8b21abf9dde26b">Simulator::start</a></div><div class="ttdeci">bool start(int cycle_ms=25)</div><div class="ttdoc">Start the simulation in V-REP and the communication thread. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00047">simulator.cpp:47</a></div></div>
 <div class="ttc" id="class_simulator_html_aef7e0ac61839e0764e83ac31da2680a8"><div class="ttname"><a href="class_simulator.html#aef7e0ac61839e0764e83ac31da2680a8">Simulator::wait_pos_t1</a></div><div class="ttdeci">bool wait_pos_t1(int msec=-1)</div><div class="ttdoc">Wait for the pos_t1 signal (robot over supply conveyor) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00352">simulator.cpp:352</a></div></div>
 <div class="ttc" id="class_simulator_html_a2a9ad23a2c7d4b6da4835176e319eaea"><div class="ttname"><a href="class_simulator.html#a2a9ad23a2c7d4b6da4835176e319eaea">Simulator::wait_arret_t2</a></div><div class="ttdeci">bool wait_arret_t2(int msec=-1)</div><div class="ttdoc">Wait for the arret_t2 signal (evacuation conveyor stopped) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00379">simulator.cpp:379</a></div></div>
-<div class="ttc" id="class_message_box_html_a4745ad9822e838c9410f369143219018"><div class="ttname"><a href="class_message_box.html#a4745ad9822e838c9410f369143219018">MessageBox::receive</a></div><div class="ttdeci">T receive()</div><div class="ttdoc">Receive the data (blocking call) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00091">simulator.h:91</a></div></div>
+<div class="ttc" id="class_message_box_html_a4745ad9822e838c9410f369143219018"><div class="ttname"><a href="class_message_box.html#a4745ad9822e838c9410f369143219018">MessageBox::receive</a></div><div class="ttdeci">T receive()</div><div class="ttdoc">Receive the data (blocking call) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00129">simulator.h:129</a></div></div>
 <div class="ttc" id="class_simulator_html_a9886fdcb11f89d2f523f55e610cf3dc5"><div class="ttname"><a href="class_simulator.html#a9886fdcb11f89d2f523f55e610cf3dc5">Simulator::set_Pose</a></div><div class="ttdeci">virtual void set_Pose(bool state)</div><div class="ttdoc">Set the Pose command (put down an object) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00450">simulator.cpp:450</a></div></div>
 <div class="ttc" id="class_simulator_html_adc667fd5e688c7f9200727cc6c74afc4"><div class="ttname"><a href="class_simulator.html#adc667fd5e688c7f9200727cc6c74afc4">Simulator::read_fin_OP3</a></div><div class="ttdeci">bool read_fin_OP3()</div><div class="ttdoc">Read the fin_OP3 signal (assembly operation 3 finished) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00412">simulator.cpp:412</a></div></div>
+<div class="ttc" id="class_status_signal_html"><div class="ttname"><a href="class_status_signal.html">StatusSignal</a></div><div class="ttdoc">Implementation of a status signal. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00064">simulator.h:64</a></div></div>
+<div class="ttc" id="class_status_signal_html_a6211c3b42196aa5f2de92cfa9e79f618"><div class="ttname"><a href="class_status_signal.html#a6211c3b42196aa5f2de92cfa9e79f618">StatusSignal::set</a></div><div class="ttdeci">void set()</div><div class="ttdoc">Set the signal. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8h_source.html#l00075">simulator.h:75</a></div></div>
 <div class="ttc" id="class_simulator_html_aa33259e44ccd34588e5eb78e03fee2a0"><div class="ttname"><a href="class_simulator.html#aa33259e44ccd34588e5eb78e03fee2a0">Simulator::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdoc">Stop the simulation in V-REP and the communication thread. </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00080">simulator.cpp:80</a></div></div>
 <div class="ttc" id="class_simulator_html_a443233f83c0bd7cbd444417911947882"><div class="ttname"><a href="class_simulator.html#a443233f83c0bd7cbd444417911947882">Simulator::set_OP3</a></div><div class="ttdeci">void set_OP3(bool state)</div><div class="ttdoc">Set the OP3 command (assembly operation 3) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00462">simulator.cpp:462</a></div></div>
 <div class="ttc" id="class_simulator_html_a257149bacf3366941acd7cbf6eb39431"><div class="ttname"><a href="class_simulator.html#a257149bacf3366941acd7cbf6eb39431">Simulator::set_Verif</a></div><div class="ttdeci">void set_Verif(bool state)</div><div class="ttdoc">Set the Verif command (assembly verification) </div><div class="ttdef"><b>Definition:</b> <a href="simulator_8cpp_source.html#l00466">simulator.cpp:466</a></div></div>
@@ -340,7 +370,7 @@ $(document).ready(function(){initNavTree('simulator_8h_source.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_c85d3e3c5052e9ad9ce18c6863244a25.html">lib</a></li><li class="navelem"><a class="el" href="simulator_8h.html">simulator.h</a></li>
-    <li class="footer">Generated on Fri Nov 20 2015 15:33:41 for Assembly Control by
+    <li class="footer">Generated on Mon Nov 30 2015 17:00:01 for Assembly Control by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>
