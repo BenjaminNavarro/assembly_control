@@ -58,6 +58,44 @@ protected:
 
 };
 
+/**
+ * @brief Implementation of a status signal
+ */
+class StatusSignal {
+private:
+	std::mutex m_;
+public:
+	StatusSignal() {
+		m_.lock();
+	}
+
+	/**
+	 * @brief Set the signal
+	 */
+	void set() {
+		m_.unlock();
+	}
+
+	/**
+	 * @brief Clear the signal
+	 */
+	void clear() {
+		m_.try_lock();
+	}
+
+	/**
+	 * @brief Check if the signal has already been set.
+	 */
+	bool has_arrived() {
+		if(m_.try_lock()) {
+			m_.unlock();
+			return true;
+		}
+		else 
+			return false;
+	}
+};
+
 
 /**
  * @brief Implementation of a message box synchronization system
