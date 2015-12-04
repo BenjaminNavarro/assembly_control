@@ -322,32 +322,67 @@ void Simulator::process(int cycle_ms) {
 	}
 }
 
-void Simulator::wait_co() {
-	signals_.co.wait();
+bool Simulator::wait_co(int msec) {
+	if(msec < 0) {
+		signals_.co.wait();
+		return true;
+	}
+	else
+		return signals_.co.wait_for(msec);
 }
 
-void Simulator::wait_fprise() {
-	signals_.fprise.wait();
+bool Simulator::wait_fprise(int msec) {
+	if(msec < 0) {
+		signals_.fprise.wait();
+		return true;
+	}
+	else
+		return signals_.fprise.wait_for(msec);
 }
 
-void Simulator::wait_fpose() {
-	signals_.fpose.wait();
+bool Simulator::wait_fpose(int msec) {
+	if(msec < 0) {
+		signals_.fpose.wait();
+		return true;
+	}
+	else
+		return signals_.fpose.wait_for(msec);
 }
 
-void Simulator::wait_pos_t1() {
-	signals_.pos_t1.wait();
+bool Simulator::wait_pos_t1(int msec) {
+	if(msec < 0) {
+		signals_.pos_t1.wait();
+		return true;
+	}
+	else
+		return signals_.pos_t1.wait_for(msec);
 }
 
-void Simulator::wait_pos_t2() {
-	signals_.pos_t2.wait();
+bool Simulator::wait_pos_t2(int msec) {
+	if(msec < 0) {
+		signals_.pos_t2.wait();
+		return true;
+	}
+	else
+		return signals_.pos_t2.wait_for(msec);
 }
 
-void Simulator::wait_pos_assem() {
-	signals_.pos_assem.wait();
+bool Simulator::wait_pos_assem(int msec) {
+	if(msec < 0) {
+		signals_.pos_assem.wait();
+		return true;
+	}
+	else
+		return signals_.pos_assem.wait_for(msec);
 }
 
-void Simulator::wait_arret_t2() {
-	signals_.arret_t2.wait();
+bool Simulator::wait_arret_t2(int msec) {
+	if(msec < 0) {
+		signals_.arret_t2.wait();
+		return true;
+	}
+	else
+		return signals_.arret_t2.wait_for(msec);
 }
 
 bool Simulator::read_fin_reccam() {
