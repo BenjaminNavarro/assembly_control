@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <thread>
+#include <unistd.h>
 
 #include "simulator.h"
 
@@ -32,8 +33,8 @@ void tache_tapis1() {
 
 			case Tapis1Arrete:
 				sim.set_AV_T1(false);
-				demande_demarrage_tapis1.wait();	// blocking call
-				etat = Tapis1EnMarche;
+				if(demande_demarrage_tapis1.wait_for(10))	// blocking call (for 10ms)
+					etat = Tapis1EnMarche;
 			break;
 		}
 	}
@@ -69,26 +70,26 @@ void autre_tache() {
 
 int main(int argc, char const *argv[])
 {
-	thread ctrl_tapis1;
-	// May declare other threads here
+	 thread ctrl_tapis1;
+	 // May declare other threads here
 
-    string cmd;
-    while(1) {
-    	cout << "Enter init or end" << endl;
-    	cin >> cmd;
-    	if(cmd == "init") {
-			if(not sim.start(10)) {
-		    	return -1;
-		    }
+     string cmd;
+     while(1) {
+     	cout << "Enter init or end" << endl;
+     	cin >> cmd;
+     	if(cmd == "init") {
+	 		if(not sim.start(10)) {
+	 	    	return -1;
+	 	    }
 
-		    ctrl_tapis1 = thread(tache_tapis1);
-		    // May create other threads here
-    	}
-    	else if(cmd == "end") {
-    		sim.stop();
-    		break;
-    	}
-    }
+	 	    ctrl_tapis1 = thread(tache_tapis1);
+	 	    // May create other threads here
+     	}
+     	else if(cmd == "end") {
+     		sim.stop();
+     		break;
+     	}
+     }
 
 	return 0;
 }

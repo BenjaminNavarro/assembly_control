@@ -27,6 +27,7 @@ public:
 	}
 
 	SimpleSimulator& operator=(const SimpleSimulator& sim) {
+		return *this;
 	}
 
 	/***	Signals		***/
