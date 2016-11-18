@@ -22,7 +22,7 @@ file(
         GLOB_RECURSE
         lib_source_files
         src/lib/*
-        ${VREP_PATH}/remoteApi/*
+        src/lib/vrep/*
 )
 
 add_library(simulator ${lib_source_files})
