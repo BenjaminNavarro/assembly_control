@@ -1,6 +1,6 @@
 /**
  * @file simulator.h
- * @brief Implement a Simulator class to interact with V-REP as well as Signal and MessageBox classes 
+ * @brief Implement a Simulator class to interact with V-REP as well as Signal and MessageBox classes
  * @author Benjamin Navarro
  * @version 1.0.0
  * @date 2015-10-12
@@ -17,7 +17,7 @@
 /**
  * @brief Implementation of a synchronization signal
  */
-class Signal 
+class Signal
 {
 public:
 	Signal() = default;
@@ -41,7 +41,7 @@ public:
 		std::unique_lock<std::mutex> lock(m_);
 		if(cv_.wait_for(lock, std::chrono::milliseconds(ms)) == std::cv_status::timeout)
 			return false;
-		else 
+		else
 			return true;
 	}
 
@@ -91,7 +91,7 @@ public:
 			m_.unlock();
 			return true;
 		}
-		else 
+		else
 			return false;
 	}
 };
@@ -103,14 +103,14 @@ public:
  * @tparam T Type of the data hold by the message box
  */
 template<typename T>
-class MessageBox : public Signal 
+class MessageBox : public Signal
 {
 public:
 	MessageBox() = default;
 	~MessageBox() = default;
 
 	/**
-	 * @brief Send a new data 
+	 * @brief Send a new data
 	 *
 	 * @param data The data to be sent
 	 */
@@ -132,8 +132,8 @@ public:
 		return data_;
 	}
 
-	private:
-		T data_;
+private:
+	T data_;
 
 };
 
@@ -150,6 +150,7 @@ public:
 	}
 
 	Simulator& operator=(const Simulator& sim) {
+		return *this;
 	}
 
 	/**
@@ -160,7 +161,7 @@ public:
 	 * @return True if successfully started, false otherwise
 	 */
 	bool start(int cycle_ms = 25);
-	
+
 	/**
 	 * @brief Stop the simulation in V-REP and the communication thread
 	 */
@@ -217,7 +218,7 @@ public:
 	 */
 	bool read_fin_reccam();
 	/**
-	 * @brief Read the p1 signal (type 1 object) 
+	 * @brief Read the p1 signal (type 1 object)
 	 *
 	 * @return State of the signal
 	 */
@@ -235,7 +236,7 @@ public:
 	 */
 	bool read_p3();
 	/**
-	 * @brief Read the fin_OP1 signal (assembly operation 1 finished) 
+	 * @brief Read the fin_OP1 signal (assembly operation 1 finished)
 	 *
 	 * @return State of the signal
 	 */
@@ -259,7 +260,7 @@ public:
 	 */
 	bool read_assemblage_conforme();
 	/**
-	 * @brief Read the assemblage_evacue signal (evacuated assembly) 
+	 * @brief Read the assemblage_evacue signal (evacuated assembly)
 	 *
 	 * @return State of the signal
 	 */
@@ -267,7 +268,7 @@ public:
 
 	/***	Commands	***/
 	/**
-	 * @brief Set the AV_T1 command (supply conveyor) 
+	 * @brief Set the AV_T1 command (supply conveyor)
 	 *
 	 * @param state Set (true) or reset (false) the command
 	 */
@@ -285,7 +286,7 @@ public:
 	 */
 	void set_Reccam(bool state);
 	/**
-	 * @brief Set the D command (robot going to the right) 
+	 * @brief Set the D command (robot going to the right)
 	 *
 	 * @param state Set (true) or reset (false) the command
 	 */
@@ -347,9 +348,9 @@ protected:
 	 */
 	bool start_Streaming();
 	/**
-	 * @brief Get the current time since epoch 
+	 * @brief Get the current time since epoch
 	 *
-	 * @return Time in seconds (us precision) 
+	 * @return Time in seconds (us precision)
 	 */
 	double get_Current_Time();
 
@@ -407,17 +408,17 @@ protected:
 		bool assemblage_evacue;
 	};
 	signals_t signals_;
-	
+
 	/**
 	 * @brief Current robot position
 	 */
 	enum Position {
-		PosAssembly = 1, 
-		PosAppro = 2, 
+		PosAssembly = 1,
+		PosAppro = 2,
 		PosEvac = 3,
 	};
 	Position prev_position_;
-	
+
 	int prev_gripper_state_;
 	int prev_optical_barrier_state_;
 	int prev_evac_conveyor_state_;
@@ -430,7 +431,7 @@ protected:
 
 	int client_id_;
 	int appro_prox_sensor_handle_;
-	
+
 };
 
 extern Simulator sim;
