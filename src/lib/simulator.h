@@ -64,15 +64,18 @@ protected:
 class StatusSignal {
 private:
 	std::mutex m_;
+	bool state_;
 public:
 	StatusSignal() {
-		m_.lock();
+		state_ = false;
 	}
 
 	/**
 	 * @brief Set the signal
 	 */
 	void set() {
+		m_.lock();
+		state_ = true;
 		m_.unlock();
 	}
 
@@ -80,19 +83,22 @@ public:
 	 * @brief Clear the signal
 	 */
 	void clear() {
-		m_.try_lock();
+		m_.lock();
+		state_ = false;
+		m_.unlock();
 	}
 
 	/**
 	 * @brief Check if the signal has already been set.
 	 */
-	bool has_arrived() {
-		if(m_.try_lock()) {
-			m_.unlock();
-			return true;
-		}
-		else
-			return false;
+	bool is_set() {
+		bool ret;
+
+		m_.lock();
+		ret = state_;
+		m_.unlock();
+
+		return ret;
 	}
 };
 

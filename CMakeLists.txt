@@ -63,11 +63,16 @@ file(
         src/example/simple_simulator/*
 )
 
-
 file(
         GLOB_RECURSE
         tasks_example_source_files
         src/example/two_tasks/*
+)
+
+file(
+        GLOB_RECURSE
+        status_signal_example_source_files
+        src/example/status_signal_example/*
 )
 
 
@@ -80,7 +85,5 @@ target_link_libraries(simple_example simulator)
 add_executable(tasks_example ${tasks_example_source_files})
 target_link_libraries(tasks_example simulator)
 
-#add_custom_command(TARGET assembly_control
-#                   POST_BUILD
-#                  COMMAND sh ARGS make.sh
-#			   	   WORKING_DIRECTORY ../py)
+add_executable(status_signal_example ${status_signal_example_source_files})
+target_link_libraries(status_signal_example simulator)
