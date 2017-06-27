@@ -20,7 +20,9 @@
 class Signal
 {
 public:
-	Signal() = default;
+	Signal() : signaled_(false)
+	{
+	}
 	~Signal() = default;
 
 
@@ -29,7 +31,8 @@ public:
 	 */
 	void wait() {
 		std::unique_lock<std::mutex> lock(m_);
-		cv_.wait(lock);
+		cv_.wait(lock, [this](){return signaled_;});
+		signaled_ = false;
 	}
 
 	/**
@@ -39,69 +42,28 @@ public:
 	 */
 	bool wait_for(int ms) {
 		std::unique_lock<std::mutex> lock(m_);
-		if(cv_.wait_for(lock, std::chrono::milliseconds(ms)) == std::cv_status::timeout)
+		if(cv_.wait_for(lock, std::chrono::milliseconds(ms)) == std::cv_status::timeout) {
+			signaled_ = false;
 			return false;
-		else
+		}
+		else {
 			return true;
+		}
 	}
 
 	/**
 	 * @brief Notify all the waiters that the signal has arrived
 	 */
 	void notify() {
-		cv_.notify_all();
+		signaled_ = true;
+		cv_.notify_one();
 	}
 
 protected:
 	std::mutex m_;
 	std::condition_variable cv_;
-
+	bool signaled_;
 };
-
-/**
- * @brief Implementation of a status signal
- */
-class StatusSignal {
-private:
-	std::mutex m_;
-	bool state_;
-public:
-	StatusSignal() {
-		state_ = false;
-	}
-
-	/**
-	 * @brief Set the signal
-	 */
-	void set() {
-		m_.lock();
-		state_ = true;
-		m_.unlock();
-	}
-
-	/**
-	 * @brief Clear the signal
-	 */
-	void clear() {
-		m_.lock();
-		state_ = false;
-		m_.unlock();
-	}
-
-	/**
-	 * @brief Check if the signal has already been set.
-	 */
-	bool is_set() {
-		bool ret;
-
-		m_.lock();
-		ret = state_;
-		m_.unlock();
-
-		return ret;
-	}
-};
-
 
 /**
  * @brief Implementation of a message box synchronization system
@@ -140,7 +102,6 @@ public:
 
 private:
 	T data_;
-
 };
 
 /**

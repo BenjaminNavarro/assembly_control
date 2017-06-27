@@ -5,11 +5,11 @@ project(AssemblyControl)
 set(EXECUTABLE_OUTPUT_PATH ../bin)
 
 if(APPLE)
-	set(VREP_PATH "/Applications/V-REP/programming")
 	set(VREP_CFLAGS "-DNON_MATLAB_PARSING -DMAX_EXT_API_CONNECTIONS=255 -D__APPLE__")
 elseif(UNIX)
-	set(VREP_PATH "$ENV{HOME}/V-REP/programming")
 	set(VREP_CFLAGS "-DNON_MATLAB_PARSING -DMAX_EXT_API_CONNECTIONS=255 -D__linux")
+elseif(WIN32)
+	set(VREP_CFLAGS "-DNON_MATLAB_PARSING -DMAX_EXT_API_CONNECTIONS=255 -D_WIN32")
 endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${VREP_CFLAGS} -fPIC")
@@ -69,13 +69,6 @@ file(
         src/example/two_tasks/*
 )
 
-file(
-        GLOB_RECURSE
-        status_signal_example_source_files
-        src/example/status_signal_example/*
-)
-
-
 add_executable(example ${example_source_files})
 target_link_libraries(example simulator)
 
@@ -84,6 +77,3 @@ target_link_libraries(simple_example simulator)
 
 add_executable(tasks_example ${tasks_example_source_files})
 target_link_libraries(tasks_example simulator)
-
-add_executable(status_signal_example ${status_signal_example_source_files})
-target_link_libraries(status_signal_example simulator)
