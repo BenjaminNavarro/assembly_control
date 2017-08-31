@@ -13,6 +13,7 @@
 #include <mutex>
 #include <chrono>
 #include <condition_variable>
+#include <atomic>
 
 /**
  * @brief Implementation of a synchronization signal
@@ -31,8 +32,8 @@ public:
 	 */
 	void wait() {
 		std::unique_lock<std::mutex> lock(m_);
-		cv_.wait(lock, [this](){return signaled_;});
-		signaled_ = false;
+		cv_.wait(lock, [this](){return signaled_.load();});
+		signaled_.store(false);
 	}
 
 	/**
@@ -43,7 +44,7 @@ public:
 	bool wait_for(int ms) {
 		std::unique_lock<std::mutex> lock(m_);
 		if(cv_.wait_for(lock, std::chrono::milliseconds(ms)) == std::cv_status::timeout) {
-			signaled_ = false;
+			signaled_.store(false);
 			return false;
 		}
 		else {
@@ -55,14 +56,14 @@ public:
 	 * @brief Notify all the waiters that the signal has arrived
 	 */
 	void notify() {
-		signaled_ = true;
+		signaled_.store(true);
 		cv_.notify_one();
 	}
 
 protected:
 	std::mutex m_;
 	std::condition_variable cv_;
-	bool signaled_;
+	std::atomic<bool> signaled_;
 };
 
 /**
