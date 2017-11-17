@@ -17,14 +17,42 @@
 #include <sys/time.h>
 
 extern "C" {
-    #include "extApi.h"
+	#include "extApi.h"
 }
 
 using namespace std;
 
 #define LAZY_MODE 0
 
-Simulator::Simulator() : 
+Signal::Signal() : signaled_(false)
+{
+}
+
+void Signal::wait() {
+	std::unique_lock<std::mutex> lock(m_);
+	cv_.wait(lock, [this](){return signaled_.load();});
+	signaled_.store(false);
+}
+
+bool Signal::wait_for(int ms) {
+	std::unique_lock<std::mutex> lock(m_);
+	if(cv_.wait_for(lock, std::chrono::milliseconds(ms), [this](){return signaled_.load();})) {
+		signaled_.store(false);
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+
+void Signal::notify() {
+	signaled_.store(true);
+	cv_.notify_one();
+}
+
+
+
+Simulator::Simulator() :
 	client_id_(-1),
 	run_(false),
 	prev_position_(PosAssembly),
@@ -35,13 +63,13 @@ Simulator::Simulator() :
 	last_created_object_type_(0)
 {
 	memset(&commands_, 0, sizeof(commands_t));
-	
+
 	set_AV_T1(true);
 	set_AV_T2(true);
 }
 
 Simulator::~Simulator() {
-	
+
 }
 
 bool Simulator::start(int cycle_ms) {
@@ -62,7 +90,7 @@ bool Simulator::start(int cycle_ms) {
 		simxStartSimulation(client_id_, simx_opmode_oneshot_wait);
 
 		cout << "Simulation started" << endl;
-		
+
 		this_thread::sleep_for(std::chrono::seconds(1));
 
 		run_ = true;
@@ -80,7 +108,7 @@ bool Simulator::start(int cycle_ms) {
 void Simulator::stop() {
 	if(run_) {
 		run_ = false;
-		thread_.join();	
+		thread_.join();
 	}
 
 	if(client_id_ >= 0) {
@@ -103,18 +131,18 @@ bool Simulator::get_Handles() {
 bool Simulator::start_Streaming() {
 	simxInt tmp;
 	bool all_ok = true;
-	
-	all_ok &= ((simxGetIntegerSignal(client_id_, "optical_barrier_state",	&tmp, simx_opmode_streaming) & 0xFE) == 0);
-	all_ok &= ((simxGetIntegerSignal(client_id_, "gripper_closed", 			&tmp, simx_opmode_streaming) & 0xFE) == 0);
-	all_ok &= ((simxGetIntegerSignal(client_id_, "current_position", 		&tmp, simx_opmode_streaming) & 0xFE) == 0);
-	all_ok &= ((simxGetIntegerSignal(client_id_, "evac_conveyor_stopped", 	&tmp, simx_opmode_streaming) & 0xFE) == 0);
 
-	all_ok &= ((simxGetIntegerSignal(client_id_, "end_identification", 		&tmp, simx_opmode_streaming) & 0xFE) == 0);
-	all_ok &= ((simxGetIntegerSignal(client_id_, "box_type", 				&tmp, simx_opmode_streaming) & 0xFE) == 0);
-	all_ok &= ((simxGetIntegerSignal(client_id_, "end_operation", 			&tmp, simx_opmode_streaming) & 0xFE) == 0);
-	all_ok &= ((simxGetIntegerSignal(client_id_, "assembly_ok",		 		&tmp, simx_opmode_streaming) & 0xFE) == 0);
-	all_ok &= ((simxGetIntegerSignal(client_id_, "assembly_evacuated", 		&tmp, simx_opmode_streaming) & 0xFE) == 0);
-	
+	all_ok &= ((simxGetIntegerSignal(client_id_, "optical_barrier_state",   &tmp, simx_opmode_streaming) & 0xFE) == 0);
+	all_ok &= ((simxGetIntegerSignal(client_id_, "gripper_closed",          &tmp, simx_opmode_streaming) & 0xFE) == 0);
+	all_ok &= ((simxGetIntegerSignal(client_id_, "current_position",        &tmp, simx_opmode_streaming) & 0xFE) == 0);
+	all_ok &= ((simxGetIntegerSignal(client_id_, "evac_conveyor_stopped",   &tmp, simx_opmode_streaming) & 0xFE) == 0);
+
+	all_ok &= ((simxGetIntegerSignal(client_id_, "end_identification",      &tmp, simx_opmode_streaming) & 0xFE) == 0);
+	all_ok &= ((simxGetIntegerSignal(client_id_, "box_type",                &tmp, simx_opmode_streaming) & 0xFE) == 0);
+	all_ok &= ((simxGetIntegerSignal(client_id_, "end_operation",           &tmp, simx_opmode_streaming) & 0xFE) == 0);
+	all_ok &= ((simxGetIntegerSignal(client_id_, "assembly_ok",             &tmp, simx_opmode_streaming) & 0xFE) == 0);
+	all_ok &= ((simxGetIntegerSignal(client_id_, "assembly_evacuated",      &tmp, simx_opmode_streaming) & 0xFE) == 0);
+
 	return all_ok;
 }
 
@@ -126,64 +154,69 @@ double Simulator::get_Current_Time() {
 
 void Simulator::process(int cycle_ms) {
 	typedef chrono::duration<int, chrono::milliseconds::period> cycle;
-	
-	simxInt optical_barrier_state, gripper_state, position, evac_conveyor_stopped;
-	simxInt end_identification, box_type, end_operation, assembly_ok, assembly_evacuated;	
-	
-	simxGetIntegerSignal(client_id_, "optical_barrier_state",	&optical_barrier_state, 	simx_opmode_oneshot_wait);
-	simxGetIntegerSignal(client_id_, "gripper_closed", 			&gripper_state, 			simx_opmode_oneshot_wait);
-	simxGetIntegerSignal(client_id_, "current_position", 		&position, 					simx_opmode_oneshot_wait);
-	simxGetIntegerSignal(client_id_, "evac_conveyor_stopped", 	&evac_conveyor_stopped, 	simx_opmode_oneshot_wait);
 
-	simxGetIntegerSignal(client_id_, "end_identification", 		&end_identification, 		simx_opmode_oneshot_wait);
-	simxGetIntegerSignal(client_id_, "box_type", 				&box_type, 					simx_opmode_oneshot_wait);
-	simxGetIntegerSignal(client_id_, "end_operation", 			&end_operation, 			simx_opmode_oneshot_wait);
-	simxGetIntegerSignal(client_id_, "assembly_ok", 			&assembly_ok, 				simx_opmode_oneshot_wait);
-	simxGetIntegerSignal(client_id_, "assembly_evacuated", 		&assembly_evacuated, 		simx_opmode_oneshot_wait);		
-	
+	simxInt optical_barrier_state, gripper_state, position, evac_conveyor_stopped;
+	simxInt end_identification, box_type, end_operation, assembly_ok, assembly_evacuated;
+
+	simxGetIntegerSignal(client_id_, "optical_barrier_state",   &optical_barrier_state,     simx_opmode_oneshot_wait);
+	simxGetIntegerSignal(client_id_, "gripper_closed",          &gripper_state,             simx_opmode_oneshot_wait);
+	simxGetIntegerSignal(client_id_, "current_position",        &position,                  simx_opmode_oneshot_wait);
+	simxGetIntegerSignal(client_id_, "evac_conveyor_stopped",   &evac_conveyor_stopped,     simx_opmode_oneshot_wait);
+
+	simxGetIntegerSignal(client_id_, "end_identification",      &end_identification,        simx_opmode_oneshot_wait);
+	simxGetIntegerSignal(client_id_, "box_type",                &box_type,                  simx_opmode_oneshot_wait);
+	simxGetIntegerSignal(client_id_, "end_operation",           &end_operation,             simx_opmode_oneshot_wait);
+	simxGetIntegerSignal(client_id_, "assembly_ok",             &assembly_ok,               simx_opmode_oneshot_wait);
+	simxGetIntegerSignal(client_id_, "assembly_evacuated",      &assembly_evacuated,        simx_opmode_oneshot_wait);
+
 	cout << "Simulator communication thread started. Cycle time = " << cycle_ms << "ms" << endl;
-	
+
 	while(run_) {
 		auto start_time = chrono::steady_clock::now();
-		auto end_time = start_time + cycle(cycle_ms);	
-		
+		auto end_time = start_time + cycle(cycle_ms);
+
 		/***********************		Signals			************************/
-		simxGetIntegerSignal(client_id_, "optical_barrier_state",	&optical_barrier_state, 	simx_opmode_streaming);
-		simxGetIntegerSignal(client_id_, "gripper_closed", 			&gripper_state, 			simx_opmode_streaming);
-		simxGetIntegerSignal(client_id_, "current_position", 		&position, 					simx_opmode_streaming);
-		simxGetIntegerSignal(client_id_, "evac_conveyor_stopped", 	&evac_conveyor_stopped, 	simx_opmode_streaming);
-                                                                                                
-		simxGetIntegerSignal(client_id_, "end_identification", 		&end_identification, 		simx_opmode_streaming);
-		simxGetIntegerSignal(client_id_, "box_type", 				&box_type, 					simx_opmode_streaming);
-		simxGetIntegerSignal(client_id_, "end_operation", 			&end_operation, 			simx_opmode_streaming);
-		simxGetIntegerSignal(client_id_, "assembly_ok", 			&assembly_ok, 				simx_opmode_streaming);
-		simxGetIntegerSignal(client_id_, "assembly_evacuated", 		&assembly_evacuated, 		simx_opmode_streaming);	
-		
+		simxGetIntegerSignal(client_id_, "optical_barrier_state",   &optical_barrier_state,     simx_opmode_streaming);
+		simxGetIntegerSignal(client_id_, "gripper_closed",          &gripper_state,             simx_opmode_streaming);
+		simxGetIntegerSignal(client_id_, "current_position",        &position,                  simx_opmode_streaming);
+		simxGetIntegerSignal(client_id_, "evac_conveyor_stopped",   &evac_conveyor_stopped,     simx_opmode_streaming);
+
+		simxGetIntegerSignal(client_id_, "end_identification",      &end_identification,        simx_opmode_streaming);
+		simxGetIntegerSignal(client_id_, "box_type",                &box_type,                  simx_opmode_streaming);
+		simxGetIntegerSignal(client_id_, "end_operation",           &end_operation,             simx_opmode_streaming);
+		simxGetIntegerSignal(client_id_, "assembly_ok",             &assembly_ok,               simx_opmode_streaming);
+		simxGetIntegerSignal(client_id_, "assembly_evacuated",      &assembly_evacuated,        simx_opmode_streaming);
+
 		if(optical_barrier_state != prev_optical_barrier_state_) {
 			prev_optical_barrier_state_ = optical_barrier_state;
-			
+
 			if(optical_barrier_state)
 				signals_.co.notify();
-		}	
-
-		if(gripper_state != prev_gripper_state_) {
-			if(gripper_state)
-				signals_.fprise.notify();
-			else
-				signals_.fpose.notify();
-			prev_gripper_state_ = gripper_state;
 		}
+
+		bool ongoing_operation = commands_.OP1 or commands_.OP2 or commands_.OP3;
+		if(not ongoing_operation and gripper_state != prev_gripper_state_) {
+			if(gripper_state) {
+				std::cout << "NOTIFY: fprise\n";
+				signals_.fprise.notify();
+			}
+			else {
+				std::cout << "NOTIFY: fpose\n";
+				signals_.fpose.notify();
+			}
+		}
+		prev_gripper_state_ = gripper_state;
 
 		if(position != prev_position_) {
 			switch(position) {
-				case PosAssembly:
-					signals_.pos_assem.notify();
+			case PosAssembly:
+				signals_.pos_assem.notify();
 				break;
-				case PosAppro:
-					signals_.pos_t1.notify();
+			case PosAppro:
+				signals_.pos_t1.notify();
 				break;
-				case PosEvac:
-					signals_.pos_t2.notify();
+			case PosEvac:
+				signals_.pos_t2.notify();
 				break;
 			}
 			prev_position_ = Position(position);
@@ -192,11 +225,11 @@ void Simulator::process(int cycle_ms) {
 
 		if(evac_conveyor_stopped != prev_evac_conveyor_state_) {
 			prev_evac_conveyor_state_ = evac_conveyor_stopped;
-			
+
 			if(evac_conveyor_stopped)
 				signals_.arret_t2.notify();
 		}
-		
+
 		signals_.fin_reccam = end_identification;
 		signals_.p1 = (box_type == 1);
 		signals_.p2 = (box_type == 2);
@@ -206,8 +239,8 @@ void Simulator::process(int cycle_ms) {
 		signals_.fin_OP3 = (end_operation == 3);
 		signals_.assemblage_conforme = assembly_ok;
 		signals_.assemblage_evacue = assembly_evacuated;
-		
-		/*********************** 		Commands		***********************/
+
+		/***********************        Commands		***********************/
 		static bool test_t1 = true;
 		if(commands_.AV_T1) {
 			simxSetIntegerSignal(client_id_, "appro_conveyor_command", 1, simx_opmode_oneshot);
@@ -227,39 +260,39 @@ void Simulator::process(int cycle_ms) {
 #else
 				int object_to_add = rand() % 100;
 				int type;
-				
+
 				if(last_created_object_type_ == 0) {
 					if(object_to_add < 33)
 						type = 1;
 					else if(object_to_add < 66)
 						type = 2;
 					else
-						type = 3;	
+						type = 3;
 				}
 				else {
 					if(last_created_object_type_ == 1) {
 						if(object_to_add < 60)
 							type = 2;
-						else 
+						else
 							type = 3;
 					}
 					else if(last_created_object_type_ == 2) {
 						if(object_to_add < 40)
 							type = 1;
-						else 
+						else
 							type = 3;
 					}
 					else {
 						if(object_to_add < 60)
 							type = 1;
-						else 
+						else
 							type = 2;
 					}
 				}
-				
+
 				last_created_object_type_ = type;
 #endif
-					
+
 				simxSetIntegerSignal(client_id_, "add_object", type, simx_opmode_oneshot);
 			}
 		}
@@ -267,56 +300,56 @@ void Simulator::process(int cycle_ms) {
 			simxSetIntegerSignal(client_id_, "appro_conveyor_command", 0, simx_opmode_oneshot);
 			test_t1 = true;
 		}
-		
+
 		if(commands_.AV_T2)
 			simxSetIntegerSignal(client_id_, "evac_conveyor_command", 1, simx_opmode_oneshot);
 		else
 			simxSetIntegerSignal(client_id_, "evac_conveyor_command", 0, simx_opmode_oneshot);
-		
+
 		if(commands_.Reccam)
 			simxSetIntegerSignal(client_id_, "reccam", 1, simx_opmode_oneshot);
 		else
 			simxSetIntegerSignal(client_id_, "reccam", 0, simx_opmode_oneshot);
-		
-		if(commands_.D)		
+
+		if(commands_.D)
 			simxSetIntegerSignal(client_id_, "go_right", 1, simx_opmode_oneshot);
 		else
 			simxSetIntegerSignal(client_id_, "go_right", 0, simx_opmode_oneshot);
-		
-		if(commands_.G)		
+
+		if(commands_.G)
 			simxSetIntegerSignal(client_id_, "go_left", 1, simx_opmode_oneshot);
 		else
-			simxSetIntegerSignal(client_id_, "go_left", 0, simx_opmode_oneshot);		
-		
-		if(commands_.Prend)		
+			simxSetIntegerSignal(client_id_, "go_left", 0, simx_opmode_oneshot);
+
+		if(commands_.Prend)
 			simxSetIntegerSignal(client_id_, "take", 1, simx_opmode_oneshot);
 		else
-			simxSetIntegerSignal(client_id_, "take", 0, simx_opmode_oneshot);	
-		
-		if(commands_.Pose)		
+			simxSetIntegerSignal(client_id_, "take", 0, simx_opmode_oneshot);
+
+		if(commands_.Pose)
 			simxSetIntegerSignal(client_id_, "put_down", 1, simx_opmode_oneshot);
 		else
-			simxSetIntegerSignal(client_id_, "put_down", 0, simx_opmode_oneshot);	
-		
-		if(commands_.OP1)		
+			simxSetIntegerSignal(client_id_, "put_down", 0, simx_opmode_oneshot);
+
+		if(commands_.OP1)
 			simxSetIntegerSignal(client_id_, "OP1", 1, simx_opmode_oneshot);
 		else
-			simxSetIntegerSignal(client_id_, "OP1", 0, simx_opmode_oneshot);	
-		
-		if(commands_.OP2)		
+			simxSetIntegerSignal(client_id_, "OP1", 0, simx_opmode_oneshot);
+
+		if(commands_.OP2)
 			simxSetIntegerSignal(client_id_, "OP2", 1, simx_opmode_oneshot);
 		else
-			simxSetIntegerSignal(client_id_, "OP2", 0, simx_opmode_oneshot);	
-		
-		if(commands_.OP3)		
+			simxSetIntegerSignal(client_id_, "OP2", 0, simx_opmode_oneshot);
+
+		if(commands_.OP3)
 			simxSetIntegerSignal(client_id_, "OP3", 1, simx_opmode_oneshot);
 		else
-			simxSetIntegerSignal(client_id_, "OP3", 0, simx_opmode_oneshot);	
-		
-		if(commands_.Verif)		
+			simxSetIntegerSignal(client_id_, "OP3", 0, simx_opmode_oneshot);
+
+		if(commands_.Verif)
 			simxSetIntegerSignal(client_id_, "verif", 1, simx_opmode_oneshot);
 		else
-			simxSetIntegerSignal(client_id_, "verif", 0, simx_opmode_oneshot);	
+			simxSetIntegerSignal(client_id_, "verif", 0, simx_opmode_oneshot);
 
 		this_thread::sleep_until(end_time);
 	}
