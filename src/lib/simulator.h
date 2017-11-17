@@ -21,44 +21,27 @@
 class Signal
 {
 public:
-	Signal() : signaled_(false)
-	{
-	}
-	~Signal() = default;
+	Signal();
 
+	~Signal() = default;
 
 	/**
 	 * @brief Wait for the signal to come (blocking call)
 	 */
-	void wait() {
-		std::unique_lock<std::mutex> lock(m_);
-		cv_.wait(lock, [this](){return signaled_.load();});
-		signaled_.store(false);
-	}
+	void wait();
 
 	/**
 	 * @brief Wait for the signal to come (blocking call) for a certain amount of time
 	 * @param ms Number of milliseconds to wait before returning
 	 * @return true is the signal has arrived during the timeout period, false otherwise
 	 */
-	bool wait_for(int ms) {
-		std::unique_lock<std::mutex> lock(m_);
-		if(cv_.wait_for(lock, std::chrono::milliseconds(ms)) == std::cv_status::timeout) {
-			signaled_.store(false);
-			return false;
-		}
-		else {
-			return true;
-		}
-	}
+
+	bool wait_for(int ms);
 
 	/**
 	 * @brief Notify all the waiters that the signal has arrived
 	 */
-	void notify() {
-		signaled_.store(true);
-		cv_.notify_one();
-	}
+	void notify();
 
 protected:
 	std::mutex m_;
