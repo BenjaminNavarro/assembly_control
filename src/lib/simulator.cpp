@@ -38,10 +38,10 @@ bool Signal::wait_for(int ms) {
 	std::unique_lock<std::mutex> lock(m_);
 	if(cv_.wait_for(lock, std::chrono::milliseconds(ms), [this](){return signaled_.load();})) {
 		signaled_.store(false);
-		return false;
+		return true;
 	}
 	else {
-		return true;
+		return false;
 	}
 }
 
