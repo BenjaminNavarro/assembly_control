@@ -1,7 +1,6 @@
 var simulator_8h =
 [
     [ "Signal", "class_signal.html", "class_signal" ],
-    [ "StatusSignal", "class_status_signal.html", "class_status_signal" ],
     [ "MessageBox", "class_message_box.html", "class_message_box" ],
     [ "Simulator", "class_simulator.html", "class_simulator" ],
     [ "commands_t", "struct_simulator_1_1commands__t.html", "struct_simulator_1_1commands__t" ],
