@@ -79,8 +79,7 @@ public:
 	 * @return The received data
 	 */
 	T receive() {
-		std::unique_lock<std::mutex> lock(m_);
-		cv_.wait(lock);
+		wait();
 		return data_;
 	}
 
